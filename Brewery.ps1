@@ -34,9 +34,10 @@ sudo modprobe w1-therm
 $Phase1StartTime = (Get-Date)
 $Relay = $false
 $PreviousRelay = $true
-do
+$Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Name[0] + "/w1_slave"
+    do
 {
-    foreach ($Line in (Get-Content /sys/bus/w1/devices/28-031581ce23ff/w1_slave))
+    foreach ($Line in (Get-Content $Thermometer1))
     {
         Clear-Host
         if ($Line -match 't=')
@@ -65,37 +66,41 @@ do
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
 sudo python /home/pi/PiBrewery/PiRelay12Off.py
 
-$Relay = $false
-$PreviousRelay = $true
-$Phase2StartTime = (Get-Date)
-do
+if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Count -eq '2')
 {
-    foreach ($Line in (Get-Content /sys/bus/w1/devices/28-031581d75cff/w1_slave))
+    $Thermometer2 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Name[1] + "/w1_slave"
+    $Relay = $false
+    $PreviousRelay = $true
+    $Phase2StartTime = (Get-Date)
+    do
     {
-        Clear-Host
-        if ($Line -match 't=')
+        foreach ($Line in (Get-Content $Thermometer2))
         {
-            Write-Host ("Phase 2 | Target Temp: " + $Phase2TempTarget + " | Time Remaining: " + [math]::Round(((($Phase2StartTime.AddSeconds($Phase2Timer))  - (Get-Date)).TotalSeconds),0) + " seconds")
-            Write-Host ("Current temperature: " + [math]::Round(($Line.Split('=')[1] / 1000),1) + "C")
-            if (($Line.Split('=')[1] / 1000) -gt $Phase2TempTarget) { $Relay = $false } else { $Relay = $true }
-            Write-Host ("Relay status: " + $Relay)
-        }
-
-        if ($Relay -ne $PreviousRelay)
-        {
-            if ($Relay -eq $true)
+            Clear-Host
+            if ($Line -match 't=')
             {
-                sudo python /home/pi/PiBrewery/PiRelay34On.py
+                Write-Host ("Phase 2 | Target Temp: " + $Phase2TempTarget + " | Time Remaining: " + [math]::Round(((($Phase2StartTime.AddSeconds($Phase2Timer))  - (Get-Date)).TotalSeconds),0) + " seconds")
+                Write-Host ("Current temperature: " + [math]::Round(($Line.Split('=')[1] / 1000),1) + "C")
+                if (($Line.Split('=')[1] / 1000) -gt $Phase2TempTarget) { $Relay = $false } else { $Relay = $true }
+                Write-Host ("Relay status: " + $Relay)
             }
 
-
-            if ($Relay -eq $false)
+            if ($Relay -ne $PreviousRelay)
             {
-                sudo python /home/pi/PiBrewery/PiRelay34Off.py
-            }
-        }
+                if ($Relay -eq $true)
+                {
+                    sudo python /home/pi/PiBrewery/PiRelay34On.py
+                }
 
-        $PreviousRelay = $Relay
-    }
-} until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
-sudo python /home/pi/PiBrewery/PiRelay34Off.py
+
+                if ($Relay -eq $false)
+                {
+                    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+                }
+            }
+
+            $PreviousRelay = $Relay
+        }
+    } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
+    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+}
