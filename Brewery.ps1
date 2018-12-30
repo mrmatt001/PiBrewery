@@ -84,6 +84,7 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
         $PreviousRelay = $Relay
     }
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
+Set-GpioPin -ID 4 -Value Low
 sudo python /home/pi/PiBrewery/PiRelay12Off.py
 
 if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Count -eq '2')
