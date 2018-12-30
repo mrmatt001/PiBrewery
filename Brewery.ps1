@@ -55,7 +55,8 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
             {
                 sudo python /home/pi/PiBrewery/PiRelay12On.py
             }
-
+            
+            if ($Relay -eq $false)
             {
                 sudo python /home/pi/PiBrewery/PiRelay12Off.py
             }
@@ -91,7 +92,6 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
                 {
                     sudo python /home/pi/PiBrewery/PiRelay34On.py
                 }
-
 
                 if ($Relay -eq $false)
                 {
