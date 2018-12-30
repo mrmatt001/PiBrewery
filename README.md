@@ -27,14 +27,21 @@ Raspberry Pi 3 b
 WiringPi Pin layout as per https://github.com/PowerShell/PowerShell-IoT/blob/master/docs/rpi3_pin_layout.md
 
 Thermometer wiring as per https://www.raspberrypi-spy.co.uk/2013/03/raspberry-pi-1-wire-digital-thermometer-sensor/
+ 
  Ground to Ground wire
+ 
  3.3v to 3.3v
+ 
  3.3v to one end of resistor
+ 
  GPIO 6/26 to other end of resistor
 
 LED wiring as per https://github.com/PowerShell/PowerShell-IoT/tree/master/Examples/Microsoft.PowerShell.IoT.LED
+ 
  GPIO 16 / 18 to positive side of LED (translates to WiringPi 4 / 5)
+ 
  Negative side of LED to 220 ohm resistor
+ 
  Other end of resistor to Ground
 
 Operating System
