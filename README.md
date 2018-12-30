@@ -16,6 +16,16 @@ Raspberry Pi 3 b
 
 1 x PiRelay EXPANSION BOARD FOR RASPBERRY PI Raspberry Pi A+/B+/2B/3B/3B Loads up to 250VAC/5A,30VDC/5A by SB Components
 
+1 x Breadboard
+
+2 x 4.7K ohm resistors
+
+Wiring as per https://www.raspberrypi-spy.co.uk/2013/03/raspberry-pi-1-wire-digital-thermometer-sensor/
+ Ground to Ground wire
+ 3.3v to 3.3v
+ 3.3v to one end of resistor
+ GPIO 6/26 to other end of resistor
+
 Operating System
 ================
 Raspbian Stretch Lite (2018-11-13)
@@ -75,5 +85,6 @@ Reboot the Raspberry Pi
     sudo reboot
 
 Connect using the IP address / hostname either directly or over SSH. It should then launch into a PowerShell session.
+
 To run the Brewery script run:
     /home/pi/PiBrewery/Brewery.ps1
