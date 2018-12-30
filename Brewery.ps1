@@ -1,17 +1,16 @@
 Import-Module -Name Microsoft.PowerShell.IoT
-Set-GpioPin -ID 4 -Value High
-Set-GpioPin -ID 5 -Value High
-Start-Sleep -Seconds 1
-Set-GpioPin -ID 4 -Value Low
-Set-GpioPin -ID 5 -Value Low
-Start-Sleep -Seconds 1
-Set-GpioPin -ID 4 -Value High
-Set-GpioPin -ID 5 -Value High
-Start-Sleep -Seconds 1
-Set-GpioPin -ID 4 -Value Low
-Set-GpioPin -ID 5 -Value Low
-Start-Sleep -Seconds 1
+$Counter = 0
+do
+{
+    $Counter++
+    Set-GpioPin -ID 4 -Value High
+    Set-GpioPin -ID 5 -Value High
+    Start-Sleep -MilliSeconds 500
+    Set-GpioPin -ID 4 -Value Low
+    Set-GpioPin -ID 5 -Value Low
+    Start-Sleep -MilliSeconds 500
 
+} until ($Counter -eq 5)
 Clear-Host
 do
 {
