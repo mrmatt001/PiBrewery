@@ -1,5 +1,5 @@
 This is how I've built things:
-
+==============================
 Hardware
 ========
 Raspberry Pi 3 b
@@ -20,10 +20,18 @@ sudo Raspi-config
 :Set to autologon console (option three)
 :enable ssh (option five | P2)
 
+Configue Different GPIO Pins for Temperature sensors
+====================================================
+sudo nano /boot/config.txt
+At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):
+   dtoverlay=w1-gpio,gpiopin=6
+   dtoverlay=w1-gpio,gpiopin=26
+Press CTRL+X > Y > return
+
 Install PowerShell
 ==================
 
-# There will be a later version - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
+There will be a later version - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
 
 sudo apt-get install libunwind8
 wget https://github.com/PowerShell/PowerShell/releases/download/v6.2.0-preview.3/powershell-6.2.0-preview.3-linux-arm32.tar.gz
@@ -38,7 +46,12 @@ sudo apt-get update
 sudo apt-get upgrade
 
 sudo nano /home/pi/.bashrc
-#at the end of the file enter the following 2 lines...
-echo Launching PowerShell
-sudo /home/pi/powershell/pwsh
-#Press CTRL+X > Y > return
+
+At the end of the file enter the following 2 lines...
+    echo Launching PowerShell
+    sudo /home/pi/powershell/pwsh
+Press CTRL+X > Y > return
+
+Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
+
+sudo reboot
