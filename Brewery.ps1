@@ -27,8 +27,8 @@ do
     if (($Phase2TempTarget -match '^[0-9]') -and ($Phase2TempTarget -notmatch '[a-zA-Z.]')) {$Valid = $true}
 } until ($Valid -eq $true)
 
-sudo python /home/pi/PiRelay12Off.py
-sudo python /home/pi/PiRelay34Off.py
+sudo python /home/pi/PiBrewery/PiRelay12Off.py
+sudo python /home/pi/PiBrewery/PiRelay34Off.py
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
 $Phase1StartTime = (Get-Date)
@@ -52,18 +52,18 @@ do
         {
             if ($Relay -eq $true)
             {
-                sudo python /home/pi/PiRelay12On.py
+                sudo python /home/pi/PiBrewery/PiRelay12On.py
             }
 
             {
-                sudo python /home/pi/PiRelay12Off.py
+                sudo python /home/pi/PiBrewery/PiRelay12Off.py
             }
         }
 
         $PreviousRelay = $Relay
     }
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
-sudo python /home/pi/PiRelay12Off.py
+sudo python /home/pi/PiBrewery/PiRelay12Off.py
 
 $Relay = $false
 $PreviousRelay = $true
@@ -85,17 +85,17 @@ do
         {
             if ($Relay -eq $true)
             {
-                sudo python /home/pi/PiRelay34On.py
+                sudo python /home/pi/PiBrewery/PiRelay34On.py
             }
 
 
             if ($Relay -eq $false)
             {
-                sudo python /home/pi/PiRelay34Off.py
+                sudo python /home/pi/PiBrewery/PiRelay34Off.py
             }
         }
 
         $PreviousRelay = $Relay
     }
 } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
-sudo python /home/pi/PiRelay34Off.py
+sudo python /home/pi/PiBrewery/PiRelay34Off.py
