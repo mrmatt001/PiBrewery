@@ -1,5 +1,13 @@
-This is how I've built things:
-==============================
+Project Purpose
+===============
+
+The aim is to use two thermometers to trigger relays which will turn on/off kettle elements in different phases of a HomeBrew mash to maintain a constant temperature while the mash / boil runs. 
+
+I've written the main script using PowerShell core as this is something I've an interest in, and can code in. The plan has been to use a Raspberry Pi, thermometers and relays connected to kettle elements.
+
+If there is only one thermometer connected then it will only run one phase based on that thermometer. 
+
+
 Hardware
 ========
 Raspberry Pi 3 b
@@ -42,22 +50,15 @@ Install PowerShell
 
 There will be a later version - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
 
-sudo apt-get install libunwind8
-
-wget https://github.com/PowerShell/PowerShell/releases/download/v6.2.0-preview.3/powershell-6.2.0-preview.3-linux-arm32.tar.gz
-
-mkdir /home/pi/powershell
-
-tar -xvf /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz -C /home/pi/powershell
-
-rm /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz
-
-sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
-
-sudo apt-get update
-
-sudo apt-get upgrade
-
+    sudo apt-get install libunwind8
+    wget https://github.com/PowerShell/PowerShell/releases/download/v6.2.0-preview.3/powershell-6.2.0-preview.3-linux-arm32.tar.gz
+    mkdir /home/pi/powershell
+    tar -xvf /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz -C /home/pi/powershell
+    rm /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz
+    sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
+    sudo apt-get update
+    sudo apt-get upgrade
+    
 sudo nano /home/pi/.bashrc
 
 At the end of the file enter the following 2 lines...

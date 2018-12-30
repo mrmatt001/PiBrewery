@@ -13,22 +13,26 @@ do
     if (($Phase1TempTarget -match '^[0-9]') -and ($Phase1TempTarget -notmatch '[a-zA-Z.]')) {$Valid = $true}
 } until ($Valid -eq $true)
 
-do
+if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Count -eq '2')
 {
-    $Valid = $false
-    $Phase2Timer = Read-Host "Enter Phase 2 time (in seconds): "
-    if (($Phase2Timer -match '^[0-9]') -and ($Phase2Timer -notmatch '[a-zA-Z.]')) {$Valid = $true}
-} until ($Valid -eq $true)
+    do
+    {
+        $Valid = $false
+        $Phase2Timer = Read-Host "Enter Phase 2 time (in seconds): "
+        if (($Phase2Timer -match '^[0-9]') -and ($Phase2Timer -notmatch '[a-zA-Z.]')) {$Valid = $true}
+    } until ($Valid -eq $true)
 
-do
-{
-    $Valid = $false
-    $Phase2TempTarget = Read-Host "Enter Phase 2 target temperature: "
-    if (($Phase2TempTarget -match '^[0-9]') -and ($Phase2TempTarget -notmatch '[a-zA-Z.]')) {$Valid = $true}
-} until ($Valid -eq $true)
+    do
+    {
+        $Valid = $false
+        $Phase2TempTarget = Read-Host "Enter Phase 2 target temperature: "
+        if (($Phase2TempTarget -match '^[0-9]') -and ($Phase2TempTarget -notmatch '[a-zA-Z.]')) {$Valid = $true}
+    } until ($Valid -eq $true)
 
+    
+    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+}
 sudo python /home/pi/PiBrewery/PiRelay12Off.py
-sudo python /home/pi/PiBrewery/PiRelay34Off.py
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
 $Phase1StartTime = (Get-Date)
