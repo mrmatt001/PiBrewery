@@ -22,11 +22,9 @@ Raspbian Stretch Lite (2018-11-13)
 
 Manual Commands (with keyboard / monitor / network)
 ===================================================
-sudo rpi-update           #Need the latest firmware to support more than 1 temperature sensor
-
-sudo apt-get install git
-
-sudo Raspi-config
+    sudo rpi-update           #Need the latest firmware to support more than 1 temperature sensor
+    sudo apt-get install git
+    sudo Raspi-config
 
 :set new Password for Pi (option one)
 
@@ -36,7 +34,7 @@ sudo Raspi-config
 
 Configue Different GPIO Pins for Temperature sensors
 ====================================================
-sudo nano /boot/config.txt
+    sudo nano /boot/config.txt
 
 At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):
 
@@ -59,7 +57,7 @@ There will be a later version - replace the version with the file available. I o
     sudo apt-get update
     sudo apt-get upgrade
     
-sudo nano /home/pi/.bashrc
+    sudo nano /home/pi/.bashrc
 
 At the end of the file enter the following 2 lines...
 
