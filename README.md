@@ -56,6 +56,9 @@ There will be a later version - replace the version with the file available. I o
     sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
     sudo apt-get update
     sudo apt-get upgrade
+
+Set PowerShell to Run at Logon
+==============================
     
     sudo nano /home/pi/.bashrc
 
