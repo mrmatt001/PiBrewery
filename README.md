@@ -82,6 +82,7 @@ Press CTRL+X > Y > return
 Setup PowerShell IoT Module
 ===========================
 
+    sudo apt-get install wiringpi
     sudo /home/pi/powershell/pwsh
     Install-Module -Name Microsoft.PowerShell.IoT
     echo "export WIRINGPI_CODES=1"|sudo tee -a /etc/profile.d/WiringPiCodes.sh

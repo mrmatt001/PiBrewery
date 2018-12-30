@@ -1,3 +1,17 @@
+Import-Module -Name Microsoft.PowerShell.IoT
+Set-GpioPin -ID 4 -Value High
+Set-GpioPin -ID 5 -Value High
+Start-Sleep -Seconds 1
+Set-GpioPin -ID 4 -Value Low
+Set-GpioPin -ID 5 -Value Low
+Start-Sleep -Seconds 1
+Set-GpioPin -ID 4 -Value High
+Set-GpioPin -ID 5 -Value High
+Start-Sleep -Seconds 1
+Set-GpioPin -ID 4 -Value Low
+Set-GpioPin -ID 5 -Value Low
+Start-Sleep -Seconds 1
+
 Clear-Host
 do
 {
@@ -57,11 +71,13 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
         {
             if ($Relay -eq $true)
             {
+                Set-GpioPin -ID 4 -Value High
                 sudo python /home/pi/PiBrewery/PiRelay12On.py
             }
             
             if ($Relay -eq $false)
             {
+                Set-GpioPin -ID 4 -Value Low
                 sudo python /home/pi/PiBrewery/PiRelay12Off.py
             }
         }
@@ -94,11 +110,13 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 if ($Relay -eq $true)
                 {
+                    Set-GpioPin -ID 5 -Value High
                     sudo python /home/pi/PiBrewery/PiRelay34On.py
                 }
 
                 if ($Relay -eq $false)
                 {
+                    Set-GpioPin -ID 5 -Value Low
                     sudo python /home/pi/PiBrewery/PiRelay34Off.py
                 }
             }
@@ -106,5 +124,6 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             $PreviousRelay = $Relay
         }
     } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
+    Set-GpioPin -ID 5 -Value Low
     sudo python /home/pi/PiBrewery/PiRelay34Off.py
 }
