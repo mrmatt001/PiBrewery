@@ -105,9 +105,11 @@ Restart Pi
 Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
 
 Reboot the Raspberry Pi
+
     sudo reboot
 
 Connect using the IP address / hostname either directly or over SSH. It should then launch into a PowerShell session.
 
 To run the Brewery script run:
+
     /home/pi/PiBrewery/Brewery.ps1
