@@ -32,9 +32,8 @@ sudo nano /boot/config.txt
 
 At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):
 
-   dtoverlay=w1-gpio,gpiopin=6
-
-   dtoverlay=w1-gpio,gpiopin=26
+    dtoverlay=w1-gpio,gpiopin=6
+    dtoverlay=w1-gpio,gpiopin=26
 
 Press CTRL+X > Y > return
 
@@ -64,7 +63,6 @@ sudo nano /home/pi/.bashrc
 At the end of the file enter the following 2 lines...
 
     echo Launching PowerShell
-
     sudo /home/pi/powershell/pwsh
 
 Press CTRL+X > Y > return
