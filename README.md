@@ -79,6 +79,17 @@ At the end of the file enter the following 2 lines...
 
 Press CTRL+X > Y > return
 
+Setup PowerShell IoT Module
+===========================
+
+    sudo /home/pi/powershell/pwsh
+    Install-Module -Name Microsoft.PowerShell.IoT
+    echo "export WIRINGPI_CODES=1"|sudo tee -a /etc/profile.d/WiringPiCodes.sh
+    exit
+
+Restart Pi
+==========
+
 Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
 
 Reboot the Raspberry Pi
