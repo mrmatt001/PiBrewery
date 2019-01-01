@@ -1,3 +1,4 @@
+$WriteToPostgres = $true
 Import-Module -Name Microsoft.PowerShell.IoT
 Import-Module /home/pi/PiBrewery/PiBrewery.psm1
 $Counter = 0
@@ -46,6 +47,13 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
     
     sudo python /home/pi/PiBrewery/PiRelay34Off.py
 }
+if ($WriteToPostgres -eq $true)
+{
+    $BrewDate = (Get-Date)
+    $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','1','60','1','65')"
+    Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+}
+
 sudo python /home/pi/PiBrewery/PiRelay12Off.py
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
@@ -60,9 +68,9 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
         Clear-Host
         if ($Line -match 't=')
         {
-            Write-Host ("Phase 1 | Target Temp: " + $Phase1TempTarget + " | Time Remaining: " + [math]::Round(((($Phase1StartTime.AddSeconds($Phase1Timer)) - (Get-Date)).TotalSeconds),0) + " seconds")
-
-            Write-Host ("Current temperature: " + [math]::Round(($Line.Split('=')[1] / 1000),1) + "C")
+            Write-Host ("Phase 1 | Target Temp: " + $Phase1TempTarget + "C | Time Remaining: " + [math]::Round(((($Phase1StartTime.AddSeconds($Phase1Timer)) - (Get-Date)).TotalSeconds),0) + " seconds")
+            $Temperature = [math]::Round(($Line.Split('=')[1] / 1000),1)
+            Write-Host ("Current temperature: " + $Temperature + "C")
             if (($Line.Split('=')[1] / 1000) -gt $Phase1TempTarget) { $Relay = $false } else { $Relay = $true }
             Write-Host ("Relay status: " + $Relay)
         }
@@ -81,8 +89,13 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
                 sudo python /home/pi/PiBrewery/PiRelay12Off.py
             }
         }
-
-        $PreviousRelay = $Relay
+        if ($WriteToPostgres -eq $true)
+        {
+            $ReadingTime = (Get-Date)
+            $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
+            Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+        }
+    $PreviousRelay = $Relay
     }
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
 Set-GpioPin -ID 4 -Value Low
@@ -101,8 +114,9 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             Clear-Host
             if ($Line -match 't=')
             {
-                Write-Host ("Phase 2 | Target Temp: " + $Phase2TempTarget + " | Time Remaining: " + [math]::Round(((($Phase2StartTime.AddSeconds($Phase2Timer))  - (Get-Date)).TotalSeconds),0) + " seconds")
-                Write-Host ("Current temperature: " + [math]::Round(($Line.Split('=')[1] / 1000),1) + "C")
+                Write-Host ("Phase 2 | Target Temp: " + $Phase2TempTarget + "C | Time Remaining: " + [math]::Round(((($Phase2StartTime.AddSeconds($Phase2Timer))  - (Get-Date)).TotalSeconds),0) + " seconds")
+                $Temperature = [math]::Round(($Line.Split('=')[1] / 1000),1)
+                Write-Host ("Current temperature: " + $Temperature + "C")
                 if (($Line.Split('=')[1] / 1000) -gt $Phase2TempTarget) { $Relay = $false } else { $Relay = $true }
                 Write-Host ("Relay status: " + $Relay)
             }
@@ -122,6 +136,12 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
                 }
             }
 
+            if ($WriteToPostgres -eq $true)
+            {
+                $ReadingTime = (Get-Date)
+                $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','2','$Temperature','$ReadingTime')"
+                Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+            }
             $PreviousRelay = $Relay
         }
     } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
