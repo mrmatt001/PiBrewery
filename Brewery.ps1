@@ -44,8 +44,8 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
         if (($Phase2TempTarget -match '^[0-9]') -and ($Phase2TempTarget -notmatch '[a-zA-Z.]')) {$Valid = $true}
     } until ($Valid -eq $true)
 
-    
-    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+    Set-GpioPin -Id 0 -Value Low  #Relay 3 - GPIO Pin 11
+    Set-GpioPin -Id 7 -Value Low  #Relay 4 - GPIO Pin 7
 }
 if ($WriteToPostgres -eq $true)
 {
@@ -54,7 +54,8 @@ if ($WriteToPostgres -eq $true)
     $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
 }
 
-sudo python /home/pi/PiBrewery/PiRelay12Off.py
+Set-GpioPin -id 3 -Value Low   #Relay 1 - GPIO Pin 15
+Set-GpioPin -id 2 -Value Low   #Relay 2 - GPIO Pin 13
 sudo modprobe w1-gpio
 sudo modprobe w1-therm
 $Phase1StartTime = (Get-Date)
@@ -79,14 +80,16 @@ do
         {
             if ($Relay -eq $true)
             {
-                Set-GpioPin -ID 4 -Value High
-                sudo python /home/pi/PiBrewery/PiRelay12On.py
+                Set-GpioPin -ID 4 -Value High  #LED 1   - GPIO Pin 16
+                Set-GpioPin -id 3 -Value High  #Relay 1 - GPIO Pin 15
+                Set-GpioPin -id 2 -Value High  #Relay 2 - GPIO Pin 13
             }
             
             if ($Relay -eq $false)
             {
-                Set-GpioPin -ID 4 -Value Low
-                sudo python /home/pi/PiBrewery/PiRelay12Off.py
+                Set-GpioPin -ID 4 -Value Low   #LED 1   - GPIO Pin 16
+                Set-GpioPin -id 3 -Value Low   #Relay 1 - GPIO Pin 15
+                Set-GpioPin -id 2 -Value Low   #Relay 2 - GPIO Pin 13
             }
         }
         if ($WriteToPostgres -eq $true)
@@ -99,8 +102,9 @@ do
     Start-Sleep -Seconds 1
     }
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
-Set-GpioPin -ID 4 -Value Low
-sudo python /home/pi/PiBrewery/PiRelay12Off.py
+Set-GpioPin -ID 4 -Value Low   #LED 1   - GPIO Pin 16
+Set-GpioPin -id 3 -Value Low   #Relay 1 - GPIO Pin 15
+Set-GpioPin -id 2 -Value Low   #Relay 2 - GPIO Pin 13
 
 if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Count -eq '2')
 {
@@ -126,14 +130,16 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 if ($Relay -eq $true)
                 {
-                    Set-GpioPin -ID 5 -Value High
-                    sudo python /home/pi/PiBrewery/PiRelay34On.py
+                    Set-GpioPin -Id 5 -Value High  #LED 2   - GPIO Pin 18
+                    Set-GpioPin -Id 0 -Value High  #Relay 3 - GPIO Pin 11
+                    Set-GpioPin -Id 7 -Value High  #Relay 4 - GPIO Pin 7
                 }
 
                 if ($Relay -eq $false)
                 {
-                    Set-GpioPin -ID 5 -Value Low
-                    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+                    Set-GpioPin -Id 5 -Value Low  #LED 2   - GPIO Pin 18
+                    Set-GpioPin -Id 0 -Value Low  #Relay 3 - GPIO Pin 11
+                    Set-GpioPin -Id 7 -Value Low  #Relay 4 - GPIO Pin 7
                 }
             }
 
@@ -147,6 +153,7 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             Start-Sleep -Seconds 1
         }
     } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
-    Set-GpioPin -ID 5 -Value Low
-    sudo python /home/pi/PiBrewery/PiRelay34Off.py
+    Set-GpioPin -Id 5 -Value Low  #LED 2   - GPIO Pin 18
+    Set-GpioPin -Id 0 -Value Low  #Relay 3 - GPIO Pin 11
+    Set-GpioPin -Id 7 -Value Low  #Relay 4 - GPIO Pin 7
 }
