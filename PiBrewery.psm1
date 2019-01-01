@@ -5,7 +5,7 @@ function Install-Postgres
     sudo -u postgres psql brewery -c "create role dbuser with login password 'dbuserpwd';"
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS control(pk SERIAL PRIMARY KEY,Start INT NOT NULL,Stop INT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL);'
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brews(BrewDate TIMESTAMP NOT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL,Malt1 VarChar(200) NULL, Malt2 VarChar(200) NULL, Malt3 VarChar(200) NULL, Hops1 Varchar(200) NULL, Hops2 VarChar(200) NULL, Hops3 VarChar(200) NULL, Notes VarChar(2000) NULL);'
-    sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brewtemps(BrewDate TIMESTAMP NOT NULL,Phase INT NOT NULL,Temperature INT NOT NULL,Time TIMESTAMP NOT NULL);'
+    sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brewtemps(BrewDate TIMESTAMP NOT NULL,Phase INT NOT NULL,Temperature NUMERIC (3, 2) NOT NULL,Time TIMESTAMP NOT NULL);'
     sudo -u postgres psql brewery -c 'INSERT INTO control(Start, Stop, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES (0,0,0,0,0,0)'
     sudo -u postgres psql brewery -c "GRANT ALL ON control TO dbuser;"
     sudo -u postgres psql brewery -c "GRANT ALL ON brews TO dbuser;"
