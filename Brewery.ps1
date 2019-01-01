@@ -1,4 +1,5 @@
 Import-Module -Name Microsoft.PowerShell.IoT
+Import-Module /home/pi/PiBrewery/PiBrewery.psm1
 $Counter = 0
 do
 {
