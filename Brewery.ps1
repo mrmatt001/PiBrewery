@@ -93,12 +93,10 @@ do
         {
             $ReadingTime = (Get-Date)
             $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
-            $SQLUpdateStatement
-            $Temperature
-            Start-Sleep -seconds 3
             $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
         }
     $PreviousRelay = $Relay
+    Start-Sleep -Seconds 1
     }
 } until ($Phase1StartTime.AddSeconds($Phase1Timer) -lt (Get-Date))
 Set-GpioPin -ID 4 -Value Low
@@ -143,10 +141,10 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 $ReadingTime = (Get-Date)
                 $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','2','$Temperature','$ReadingTime')"
-                $SQLUpdateStatement
                 $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
             }
             $PreviousRelay = $Relay
+            Start-Sleep -Seconds 1
         }
     } until ($Phase2StartTime.AddSeconds($Phase2Timer) -lt (Get-Date))
     Set-GpioPin -ID 5 -Value Low
