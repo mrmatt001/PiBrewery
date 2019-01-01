@@ -7,19 +7,19 @@ If there is only one thermometer connected then it will only run one phase based
 
 Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL.
 
-##Database Info
+## Database Info
 
-###Brews
+### Brews
 This table is used to record the date of the brew and the timings/temperatures
 
-###Brewtemps
+### Brewtemps
 This table is used to record the temperatures during the brew and which phase it is. This and the brews table can be joined on the BrewDate columns
 
-###Control
+### Control
 This table, not yet implemented, will be to allow control of the brew via a web interface / PowerShell WPF GUI 
 
 
-##Hardware
+## Hardware
 Raspberry Pi 3 b
 
 2 x DS18B20 Waterproof Temperature Sensors
@@ -54,10 +54,12 @@ LED wiring as per https://github.com/PowerShell/PowerShell-IoT/tree/master/Examp
  
  Other end of resistor to Ground
 
-##Operating System
+## Operating System
 Raspbian Stretch Lite (2018-11-13)
 
-##Manual Commands (with keyboard / monitor / network)
+# Build Steps
+
+## Manual Commands (with keyboard / monitor / network)
     sudo rpi-update           #Need the latest firmware to support more than 1 temperature sensor
     sudo apt-get install git
     sudo Raspi-config
@@ -68,7 +70,7 @@ Raspbian Stretch Lite (2018-11-13)
 
 :enable ssh (option five | P2)
 
-##Configue Different GPIO Pins for Temperature sensors
+## Configue Different GPIO Pins for Temperature sensors
     sudo nano /boot/config.txt
 
 At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):
@@ -78,7 +80,7 @@ At the end add the following lines (Change 6 and 26 to the GPIO Pins you're usin
 
 Press CTRL+X > Y > return
 
-##Install PowerShell
+## Install PowerShell Core
 
 There will probably be an updated version for this by the time you read it - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
 
@@ -91,7 +93,7 @@ There will probably be an updated version for this by the time you read it - rep
     sudo apt-get update
     sudo apt-get upgrade
 
-##Set PowerShell to Run at Logon
+## Set PowerShell Core to Run at Logon
     
     sudo nano /home/pi/.bashrc
 
@@ -102,14 +104,13 @@ At the end of the file enter the following 2 lines...
 
 Press CTRL+X > Y > return
 
-##Setup PowerShell IoT Module
+## Setup PowerShell IoT Module
     sudo apt-get install wiringpi
     sudo /home/pi/powershell/pwsh
     Install-Module -Name Microsoft.PowerShell.IoT
     echo "export WIRINGPI_CODES=1"|sudo tee -a /etc/profile.d/WiringPiCodes.sh
-    exit
-
-##Restart Pi
+   
+## Restart Pi into headless mode
 
 Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
 
@@ -124,6 +125,7 @@ To enable the Postgres database run the following commands:
     Import-Module /home/pi/PiBrewery/PiBrewery.psm1
     Install-Postgres
     
+## Launch Brewery Script    
 To run the Brewery script run:
 
     /home/pi/PiBrewery/Brewery.ps1
