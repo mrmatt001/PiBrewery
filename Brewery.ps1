@@ -51,7 +51,6 @@ if ($WriteToPostgres -eq $true)
 {
     $BrewDate = (Get-Date)
     $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','1','60','1','65')"
-    $SQLUpdateStatement
     $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
 }
 

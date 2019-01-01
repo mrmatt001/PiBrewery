@@ -7,6 +7,8 @@ I've written the main script using PowerShell core as this is something I've an 
 
 If there is only one thermometer connected then it will only run one phase based on that thermometer. 
 
+Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL
+
 
 Hardware
 ========
@@ -117,6 +119,11 @@ Reboot the Raspberry Pi
 
 Connect using the IP address / hostname either directly or over SSH. It should then launch into a PowerShell session.
 
+To enable the Postgres database run the following commands:
+
+    Import-Module /home/pi/PiBrewery/PiBrewery.psm1
+    Install-Postgres
+    
 To run the Brewery script run:
 
     /home/pi/PiBrewery/Brewery.ps1
