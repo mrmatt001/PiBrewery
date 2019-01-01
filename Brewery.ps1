@@ -52,7 +52,7 @@ if ($WriteToPostgres -eq $true)
     $BrewDate = (Get-Date)
     $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','1','60','1','65')"
     $SQLUpdateStatement
-    Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+    $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
 }
 
 sudo python /home/pi/PiBrewery/PiRelay12Off.py
@@ -94,8 +94,7 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
         {
             $ReadingTime = (Get-Date)
             $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
-            $SQLUpdateStatement
-            Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+            $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
         }
     $PreviousRelay = $Relay
     }
@@ -142,7 +141,7 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 $ReadingTime = (Get-Date)
                 $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','2','$Temperature','$ReadingTime')"
-                Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+                $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
             }
             $PreviousRelay = $Relay
         }
