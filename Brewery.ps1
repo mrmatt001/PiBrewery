@@ -50,7 +50,7 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
 if ($WriteToPostgres -eq $true)
 {
     $BrewDate = (Get-Date)
-    $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','1','60','1','65')"
+    $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','$Phase1Timer','$Phase2TempTarget','$Phase2Timer','$Phase2TempTarget')"
     $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
 }
 
@@ -61,7 +61,7 @@ $Phase1StartTime = (Get-Date)
 $Relay = $false
 $PreviousRelay = $true
 $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).Name[0] + "/w1_slave"
-    do
+do
 {
     foreach ($Line in (Get-Content $Thermometer1))
     {
@@ -94,6 +94,8 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
             $ReadingTime = (Get-Date)
             $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
             $SQLUpdateStatement
+            $Temperature
+            Start-Sleep -seconds 3
             $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
         }
     $PreviousRelay = $Relay
