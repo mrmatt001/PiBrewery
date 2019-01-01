@@ -7,7 +7,22 @@ I've written the main script using PowerShell core as this is something I've an 
 
 If there is only one thermometer connected then it will only run one phase based on that thermometer. 
 
-Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL
+Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL.
+
+Database Info
+=============
+
+Brews
+
+    This table is used to record the date of the brew and the timings/temperatures
+
+Brewtemps
+
+    This table is used to record the temperatures during the brew and which phase it is. This and the brews table can be joined on the BrewDate columns
+
+Control
+
+    This table, not yet implemented, will be to allow control of the brew via a web interface / PowerShell WPF GUI 
 
 
 Hardware
