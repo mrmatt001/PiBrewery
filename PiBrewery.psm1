@@ -24,7 +24,7 @@ function Remove-Postgres
 
 function Read-FromPostgreSQL([STRING]$Query,[STRING]$DBServer,[STRING]$DBName,[STRING]$WhereClause,[STRING]$DBPort,[STRING]$DBUser,[STRING]$DBPassword)
 {
-    import-module ((get-childitem /usr/local/share/PackageManagement/NuGet/Packages -Recurse -Filter Npgsql.dll)[0]).FullName
+    import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll
     $query = $query -f $WhereClause
     $connection = new-object Npgsql.NpgsqlConnection
     $connection.ConnectionString = "Server={0};Port={1};Database={2};User Id={3};Password={4}" -f $DBServer, $DBPort, $DBName, $DBUser, $DBPassword
