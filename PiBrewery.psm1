@@ -11,6 +11,10 @@ function Install-Postgres
     sudo -u postgres psql brewery -c "GRANT ALL ON brews TO dbuser;"
     sudo -u postgres psql brewery -c "GRANT ALL ON brewtemps TO dbuser;"
     sudo -u postgres psql brewery -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO dbuser;"
+    (Get-Content /etc/postgresql/9.6/main/pg_hba.conf).replace("host    all             all             127.0.0.1/32            md5", "host    all             all             0.0.0.0/0            md5") | Set-Content /etc/postgresql/9.6/main/pg_hba.conf
+    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("#listen_addresses = localhost", "listen_addresses = '*'") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
+    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("ssl = true                             # (change requires restart)","ssl = false                             # (change requires restart)") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
+    sudo service postgresql restart
     Register-PackageSource -Name "nugetv2" -ProviderName NuGet -Location "http://www.nuget.org/api/v2/"
     Install-Package NpgSQL -force
 }

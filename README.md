@@ -70,7 +70,7 @@ Raspbian Stretch Lite (2018-11-13)
 
 :enable ssh (option five | P2)
 
-## Configue Different GPIO Pins for Temperature sensors
+## Configure Different GPIO Pins for Temperature sensors
     sudo nano /boot/config.txt
 
 At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):

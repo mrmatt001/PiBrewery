@@ -93,6 +93,7 @@ $Thermometer1 = "/sys/bus/w1/devices/" + (Get-ChildItem /sys/bus/w1/devices/ | W
         {
             $ReadingTime = (Get-Date)
             $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
+            $SQLUpdateStatement
             $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
         }
     $PreviousRelay = $Relay
@@ -140,6 +141,7 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 $ReadingTime = (Get-Date)
                 $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','2','$Temperature','$ReadingTime')"
+                $SQLUpdateStatement
                 $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
             }
             $PreviousRelay = $Relay
