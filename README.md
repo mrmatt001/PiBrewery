@@ -1,4 +1,4 @@
-#Project Purpose
+# Project Purpose
 The aim is to use two thermometers to trigger relays which will turn on/off kettle elements in different phases of a HomeBrew mash to maintain a constant temperature while the mash / boil runs. 
 
 I've written the main script using PowerShell core as this is something I've an interest in, and can code in. The plan has been to use a Raspberry Pi, thermometers and relays connected to kettle elements.
