@@ -133,4 +133,9 @@ To run the Brewery script run:
     /home/pi/PiBrewery/Brewery.ps1 -dbuser {InsertDBUser} -dbpassword {InsertDBPassword}
 
 ## OPTIONAL: Monitor the brew using the PowerBI dashboard from a Windows computer
-Open the PiBrewery.pbix on a Windows computer. You will need to install the NpgSQL.msi from: https://go.microsoft.com/fwlink/?LinkID=282716. When installing it, ensure both options are selected. You may need to modify the connection in PowerBI disabling the Encryption option. 
+Open the PiBrewery.pbix on a Windows computer. 
+
+Requirements:
+    PowerBI Desktop - https://www.microsoft.com/en-us/download/details.aspx?id=45331
+    Install NpgSQL.msi from: https://go.microsoft.com/fwlink/?LinkID=282716. 
+    Note: When installing NpgSQL ensure both options are selected. You may need to modify the connection in PowerBI and disabling the Encryption option. 
