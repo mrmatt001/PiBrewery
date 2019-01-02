@@ -28,6 +28,39 @@ function Remove-Postgres
     sudo -u postgres psql -c 'DROP DATABASE brewery;'
 }
 
+function Install-AccessPoint([STRING]$SSID,[STRING]$SSIDPassword)
+{
+    sudo apt-get install hostapd dnsmasq -y
+    sudo systemctl stop hostapd
+    sudo systemctl stop dnsmasq
+    Add-Content -Path /etc/dhcpcd.conf -Value "interface wlan0"
+    Add-Content -Path /etc/dhcpcd.conf -Value "static ip_address=192.168.150.1/24"
+    Add-Content -Path /etc/dhcpcd.conf -Value "denyinterfaces eth0"
+    Add-Content -Path /etc/dhcpcd.conf -Value "denyinterfaces wlan0"
+    Rename-Item -Path /etc/dnsmasq.conf -NewName dnsmasq.conf.orig
+    Add-Content -Path /etc/dnsmasq.conf -Value "interface=wlan0"
+    Add-Content -Path /etc/dnsmasq.conf -Value "  dhcp-range=192.168.150.100,192.168.150.110,255.255.255.0,24h"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "@
+interface=wlan0
+bridge=br0
+hw_mode=g
+channel=7
+wmm_enabled=0
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=TKIP
+rsn_pairwise=CCMP
+ssid=$SSID
+wpa_passphrase=$SSIDPassword
+@"
+    #(Get-Content /etc/default/hostapd).replace("", "") | Set-Content /etc/default/hostapd
+    
+}
+
+
 function Read-FromPostgreSQL([STRING]$Query,[STRING]$DBServer,[STRING]$DBName,[STRING]$WhereClause,[STRING]$DBPort,[STRING]$DBUser,[STRING]$DBPassword)
 {
     import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll
