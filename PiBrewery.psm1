@@ -30,50 +30,45 @@ function Remove-Postgres
 
 function Install-AccessPoint([STRING]$SSID,[STRING]$SSIDPassword)
 {
-    sudo apt-get install hostapd dnsmasq -y
-    sudo systemctl stop hostapd
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
+    sudo apt-get install dnsmasq hostapd samba winbind -y
     sudo systemctl stop dnsmasq
+    sudo systemctl stop hostapd
     Add-Content -Path /etc/dhcpcd.conf -Value "interface wlan0"
-    Add-Content -Path /etc/dhcpcd.conf -Value "static ip_address=192.168.150.1/24"
-    Add-Content -Path /etc/dhcpcd.conf -Value "denyinterfaces eth0"
-    Add-Content -Path /etc/dhcpcd.conf -Value "denyinterfaces wlan0"
+    Add-Content -Path /etc/dhcpcd.conf -Value "    static ip_address=192.168.150.1/24"
+    sudo service dhcpcd restart
     Rename-Item -Path /etc/dnsmasq.conf -NewName dnsmasq.conf.orig
-    Add-Content -Path /etc/dnsmasq.conf -Value "interface=wlan0"
-    Add-Content -Path /etc/dnsmasq.conf -Value "  dhcp-range=192.168.150.100,192.168.150.110,255.255.255.0,24h"
-    Add-Content -Path /etc/hostapd/hostapd.conf -Value "@
-interface=wlan0
-bridge=br0
-hw_mode=g
-channel=7
-wmm_enabled=0
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
-ssid=$SSID
-wpa_passphrase=$SSIDPassword
-@"
-    (Get-Content /etc/default/hostapd).replace('#DAEMON_CONF=""', 'DAEMON_CONF="/etc/hostapd/hostapd.conf"') | Set-Content /etc/default/hostapd
-    (Get-Content /etc/sysctl.conf).replace('#net.ipv4.ip_forward=1', 'net.ipv4.ip_forward=1') | Set-Content /etc/sysctl.conf
-    sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    Add-Content -Path /etc/dnsmasq.conf -Value "interface=wlan0      # Use the require wireless interface - usually wlan0"
+    Add-Content -Path /etc/dnsmasq.conf -Value "  dhcp-range=192.168.150.100,192.168.150.120,255.255.255.0,24h"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "interface=wlan0"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "driver=nl80211"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "ssid=$SSID"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "hw_mode=g"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "channel=7"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "wmm_enabled=0"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "macaddr_acl=0"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "auth_algs=1"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "ignore_broadcast_ssid=0"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "wpa=2"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "wpa_passphrase=$SSIDPassword"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "wpa_key_mgmt=WPA-PSK"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "wpa_pairwise=TKIP"
+    Add-Content -Path /etc/hostapd/hostapd.conf -Value "rsn_pairwise=CCMP"
+    (Get-Content /etc/default/hostapd).replace('#DAEMON_CONF=""','DAEMON_CONF="/etc/hostapd/hostapd.conf"') | Set-Content /etc/default/hostapd
+    sudo service hostapd start  
+    sudo service dnsmasq start  
+    (Get-Content /etc/sysctl.conf).replace('#net.ipv4.ip_forward=1','net.ipv4.ip_forward=1') | Set-Content /etc/sysctl.conf
+    sudo iptables -t nat -A  POSTROUTING -o eth0 -j MASQUERADE
     sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
-    (Get-Content /etc/rc.local).replace('exit 0', 'iptables-restore < /etc/iptables.ipv4.nat') | Set-Content /etc/rc.local
-    Add-Content -Path /etc/rc.local -Value 'exit 0'
-    sudo apt-get install bridge-utils -y
-    sudo brctl addbr br0
-    sudo brctl addif br0 eth0
-    Add-Content -Path /etc/network/interfaces -Value 'auto br0'
-    Add-Content -Path /etc/network/interfaces -Value 'iface br0 inet manual'
-    Add-Content -Path /etc/network/interfaces -Value 'bridge_ports eth0 wlan0'
+    (Get-Content /etc/rc.local).replace('exit 0','iptables-restore < /etc/iptables.ipv4.nat') | Set-Content /etc/rc.local
+    Add-Content -Path /etc/rc.local -Value "exit 0"
 }
-
 
 function Read-FromPostgreSQL([STRING]$Query,[STRING]$DBServer,[STRING]$DBName,[STRING]$WhereClause,[STRING]$DBPort,[STRING]$DBUser,[STRING]$DBPassword)
 {
-    import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll
+    if ($IsLinux) { import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll }
+    if ($IsWindows) { import-module C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Npgsql\v4.0_4.0.4.0__5d8b90d52f46fda7\Npgsql.dll }
     $query = $query -f $WhereClause
     $connection = new-object Npgsql.NpgsqlConnection
     $connection.ConnectionString = "Server={0};Port={1};Database={2};User Id={3};Password={4}" -f $DBServer, $DBPort, $DBName, $DBUser, $DBPassword
@@ -92,7 +87,8 @@ function Read-FromPostgreSQL([STRING]$Query,[STRING]$DBServer,[STRING]$DBName,[S
 
 function Write-ToPostgreSQL([STRING]$Statement,[STRING]$DBServer,[STRING]$DBName,[STRING]$WhereClause,[STRING]$DBPort,[STRING]$DBUser,[STRING]$DBPassword)
 {
-    import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll
+    if ($IsLinux) { import-module /usr/local/share/PackageManagement/NuGet/Packages/Npgsql.4.0.4/lib/net45/Npgsql.dll }
+    if ($IsWindows) { import-module C:\Windows\Microsoft.NET\assembly\GAC_MSIL\Npgsql\v4.0_4.0.4.0__5d8b90d52f46fda7\Npgsql.dll }
     $Connection = new-object Npgsql.NpgsqlConnection
     $Connection.ConnectionString = "Server={0};Port={1};Database={2};User Id={3};Password={4}" -f $DBServer, $DBPort, $DBName, $DBUser, $DBPassword
     try

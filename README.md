@@ -90,11 +90,12 @@ There will probably be an updated version for this by the time you read it - rep
 
 ## Setup PowerShell IoT Module (within PowerShell core)
     sudo apt-get install wiringpi -y
-    Install-Module -Name Microsoft.PowerShell.IoT
+    Install-Module -Name Microsoft.PowerShell.IoT -Force
     Add-Content -Path /etc/profile.d/WiringPiCodes.sh -value "export WIRINGPI_CODES=1"
 
 ## Configure Different GPIO Pins for Temperature sensors (within PowerShell core)
 Change 6 and 26 to the GPIO Pins you're using
+
     Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=6"
     Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=26"
 
