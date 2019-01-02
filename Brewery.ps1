@@ -58,7 +58,7 @@ if ($WriteToPostgres -eq $true)
     $UnsecurePassword = (New-Object PSCredential "user",$DBPassword).GetNetworkCredential().Password
     $BrewDate = (Get-Date)
     $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','$Phase1Timer','$Phase2TempTarget','$Phase2Timer','$Phase2TempTarget')"
-    $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser $DBUser -DBPassword $UnsecurePassword
+    $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer $DBServer -DBName brewery -DBPort 5432 -DBUser $DBUser -DBPassword $UnsecurePassword
 }
 
 Set-GpioPin -id 3 -Value Low   #Relay 1 - GPIO Pin 15
@@ -103,7 +103,7 @@ do
         {
             $ReadingTime = (Get-Date)
             $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','1','$Temperature','$ReadingTime')"
-            $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+            $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer $DBServer -DBName brewery -DBPort 5432 -DBUser $DBUser -DBPassword $UnsecurePassword
         }
     $PreviousRelay = $Relay
     Start-Sleep -Seconds 1
@@ -154,7 +154,7 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
             {
                 $ReadingTime = (Get-Date)
                 $SQLUpdateStatement = "INSERT INTO brewtemps(BrewDate, Phase, Temperature, Time) VALUES ('$BrewDate','2','$Temperature','$ReadingTime')"
-                $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+                $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer $DBServer -DBName brewery -DBPort 5432 -DBUser $DBUser -DBPassword $UnsecurePassword
             }
             $PreviousRelay = $Relay
             Start-Sleep -Seconds 1
