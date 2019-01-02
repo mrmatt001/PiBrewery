@@ -62,15 +62,15 @@ Raspbian Stretch Lite (2018-11-13)
 ## Manual Commands (with keyboard / monitor / network)
     sudo rpi-update           #Need the latest firmware to support more than 1 temperature sensor
     sudo apt-get install git -y
-    sudo Raspi-config
     sudo apt-get update -y
     sudo apt-get upgrade -y
-
-### Set new Password for Pi (option one)
-### Set hostname to PiBrewery (option two | N1)
-### Set to autologon console (option three)
-### Set wifi country to location (option four | I4)
-### Enable ssh (option five | P2)
+    sudo Raspi-config
+    
+##### Set new Password for Pi (option one)
+##### Set hostname to PiBrewery (option two | N1)
+##### Set to autologon console (option three)
+##### Set wifi country to location (option four | I4)
+##### Enable ssh (option five | P2)
 
 ## Install PowerShell Core
 
