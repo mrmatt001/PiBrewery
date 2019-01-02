@@ -2,12 +2,13 @@ function Install-Postgres
 {
     Param(
         [Parameter(Mandatory=$true)][STRING]$DBUser,
-        [Parameter(Mandatory=$true)][STRING]$DBPassword
+        [Parameter(Mandatory=$true)][SecureString]$DBPassword
         )
-
+    $UnsecurePassword = (New-Object PSCredential "user",$DBPassword).GetNetworkCredential().Password
     sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common -y
     sudo -u postgres psql -c 'CREATE DATABASE brewery;'
-    sudo -u postgres psql brewery -c "create role $DBUser with login password '$DBPassword';"
+    sudo -u postgres psql brewery -c "create role $DBUser with login password '$UnsecurePassword';"
+    Remove-Variable -Name UnsecurePassword -ErrorAction SilentlyContinue
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS control(pk SERIAL PRIMARY KEY,Start INT NOT NULL,Stop INT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL);'
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brews(BrewDate TIMESTAMP NOT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL,Malt1 VarChar(200) NULL, Malt2 VarChar(200) NULL, Malt3 VarChar(200) NULL, Hops1 Varchar(200) NULL, Hops2 VarChar(200) NULL, Hops3 VarChar(200) NULL, Notes VarChar(2000) NULL);'
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brewtemps(BrewDate TIMESTAMP NOT NULL,Phase INT NOT NULL,Temperature NUMERIC (4, 1) NOT NULL,Time TIMESTAMP NOT NULL);'
@@ -21,7 +22,7 @@ function Install-Postgres
     (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("ssl = true","ssl = false") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
     sudo service postgresql restart
     Register-PackageSource -Name "nugetv2" -ProviderName NuGet -Location "http://www.nuget.org/api/v2/"
-    Install-Package NpgSQL -force | Out-Null
+    Install-Package NpgSQL | Out-Null
 }
 
 function Remove-Postgres

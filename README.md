@@ -72,6 +72,10 @@ Raspbian Stretch Lite (2018-11-13)
 ##### Set wifi country to location (option four | I4)
 ##### Enable ssh (option five | P2)
 
+## Connect to Pi in headless mode (easier to copy commands from this page)
+
+Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
+
 ## Install PowerShell Core
 
 There will probably be an updated version for this by the time you read it - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
@@ -99,11 +103,7 @@ Change 6 and 26 to the GPIO Pins you're using
     Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=6"
     Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=26"
 
-## Restart Pi into headless mode
-
-Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
-
-Reboot the Raspberry Pi
+## Reboot the Raspberry Pi
 
     sudo reboot
 
