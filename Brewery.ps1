@@ -1,7 +1,8 @@
 Param(
         [Parameter(Mandatory=$true)][STRING]$DBUser,
-        [Parameter(Mandatory=$true)][SecureString]$DBPassword
-        [Parameter]$WriteToPostgres = $true
+        [Parameter(Mandatory=$true)][SecureString]$DBPassword,
+        [Parameter]$WriteToPostgres = $true,
+        [Parameter][STRING]$DBServer = "pibrewery"
         )
 
 Import-Module -Name Microsoft.PowerShell.IoT
@@ -54,9 +55,10 @@ if ((Get-ChildItem /sys/bus/w1/devices/ | Where-Object {$_.Name -match '^28'}).C
 }
 if ($WriteToPostgres -eq $true)
 {
+    $UnsecurePassword = (New-Object PSCredential "user",$DBPassword).GetNetworkCredential().Password
     $BrewDate = (Get-Date)
     $SQLUpdateStatement = "INSERT INTO brews(BrewDate, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES ('$BrewDate','$Phase1Timer','$Phase2TempTarget','$Phase2Timer','$Phase2TempTarget')"
-    $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser dbuser -DBPassword dbuserpwd
+    $SQLInsert = Write-ToPostgreSQL -Statement $SQLUpdateStatement -DBServer localhost -DBName brewery -DBPort 5432 -DBUser $DBUser -DBPassword $UnsecurePassword
 }
 
 Set-GpioPin -id 3 -Value Low   #Relay 1 - GPIO Pin 15
