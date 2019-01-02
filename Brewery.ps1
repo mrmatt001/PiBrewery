@@ -1,8 +1,8 @@
 Param(
         [Parameter(Mandatory=$true)][STRING]$DBUser,
         [Parameter(Mandatory=$true)][SecureString]$DBPassword,
-        [Parameter]$WriteToPostgres = $true,
-        [Parameter][STRING]$DBServer = "pibrewery"
+        $WriteToPostgres = $true,
+        [STRING]$DBServer = "pibrewery"
         )
 
 Import-Module -Name Microsoft.PowerShell.IoT
