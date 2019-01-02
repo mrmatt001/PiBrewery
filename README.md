@@ -5,7 +5,7 @@ I've written the main script using PowerShell core as this is something I've an 
 
 If there is only one thermometer connected then it will only run one phase based on that thermometer. 
 
-Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL.
+Technologies used: PowerShell Core 6.2 (Preview 3), Postgres, Raspbian, NpgSQL, PowerBI.
 
 ## Database Info
 
@@ -119,12 +119,18 @@ To enable the Postgres database run the following commands:
     Install-Postgres -dbuser {InsertUserName} -dbpassword {InsertPassword} -Force
     
 ## OPTIONAL: If setting Pi as a Wireless Access Point
+This option would be useful if the brewery is in an out of place location (such as my dad's garage) which has no WiFi signal. Doing this allows you to connect the PC to the Raspberry Pi and still control it without a keyboard / monitor.
 
     Install-AccessPoint -SSID {InsertSSID} -SSIDPassword {InsertSSIDPassword}
     sudo reboot
+
+NOTE: At this point you could connect to the WiFi network
 
 ## Launch Brewery Script    
 To run the Brewery script run:
 
     sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery    #if not done already as part of DB install
-    /home/pi/PiBrewery/Brewery.ps1
+    /home/pi/PiBrewery/Brewery.ps1 -dbuser {InsertDBUser} -dbpassword {InsertDBPassword}
+
+## OPTIONAL: Monitor the brew using the PowerBI dashboard from a Windows computer
+Open the PiBrewery.pbix on a Windows computer. You will need to install the NpgSQL.msi from: https://go.microsoft.com/fwlink/?LinkID=282716. When installing it, ensure both options are selected. You may need to modify the connection in PowerBI disabling the Encryption option. 
