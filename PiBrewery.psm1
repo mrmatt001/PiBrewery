@@ -56,8 +56,18 @@ rsn_pairwise=CCMP
 ssid=$SSID
 wpa_passphrase=$SSIDPassword
 @"
-    #(Get-Content /etc/default/hostapd).replace("", "") | Set-Content /etc/default/hostapd
-    
+    (Get-Content /etc/default/hostapd).replace('#DAEMON_CONF=""', 'DAEMON_CONF="/etc/hostapd/hostapd.conf"') | Set-Content /etc/default/hostapd
+    (Get-Content /etc/sysctl.conf).replace('#net.ipv4.ip_forward=1', 'net.ipv4.ip_forward=1') | Set-Content /etc/sysctl.conf
+    sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    sudo sh -c "iptables-save > /etc/iptables.ipv4.nat"
+    (Get-Content /etc/rc.local).replace('exit 0', 'iptables-restore < /etc/iptables.ipv4.nat') | Set-Content /etc/rc.local
+    Add-Content -Path /etc/rc.local -Value 'exit 0'
+    sudo apt-get install bridge-utils -y
+    sudo brctl addbr br0
+    sudo brctl addif br0 eth0
+    Add-Content -Path /etc/network/interfaces -Value 'auto br0'
+    Add-Content -Path /etc/network/interfaces -Value 'iface br0 inet manual'
+    Add-Content -Path /etc/network/interfaces -Value 'bridge_ports eth0 wlan0'
 }
 
 

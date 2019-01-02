@@ -61,55 +61,43 @@ Raspbian Stretch Lite (2018-11-13)
 
 ## Manual Commands (with keyboard / monitor / network)
     sudo rpi-update           #Need the latest firmware to support more than 1 temperature sensor
-    sudo apt-get install git
+    sudo apt-get install git -y
     sudo Raspi-config
+    sudo apt-get update -y
+    sudo apt-get upgrade -y
 
-:set new Password for Pi (option one)
-
-:Set to autologon console (option three)
-
-:enable ssh (option five | P2)
-
-## Configure Different GPIO Pins for Temperature sensors
-    sudo nano /boot/config.txt
-
-At the end add the following lines (Change 6 and 26 to the GPIO Pins you're using):
-
-    dtoverlay=w1-gpio,gpiopin=6
-    dtoverlay=w1-gpio,gpiopin=26
-
-Press CTRL+X > Y > return
+### Set new Password for Pi (option one)
+### Set hostname to PiBrewery (option two | N1)
+### Set to autologon console (option three)
+### Set wifi country to location (option four | I4)
+### Enable ssh (option five | P2)
 
 ## Install PowerShell Core
 
 There will probably be an updated version for this by the time you read it - replace the version with the file available. I opened up a browser on a PC and went to https://github.com/PowerShell/PowerShell/releases then copied and pasted the latest version (Preview 3 at time of writing). Use the latest / released version and update the wget / tar / rm lines accordingly
 
-    sudo apt-get install libunwind8
+    sudo apt-get install libunwind8 -y
     wget https://github.com/PowerShell/PowerShell/releases/download/v6.2.0-preview.3/powershell-6.2.0-preview.3-linux-arm32.tar.gz
     mkdir /home/pi/powershell
     tar -xvf /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz -C /home/pi/powershell
     rm /home/pi/powershell-6.2.0-preview.3-linux-arm32.tar.gz
-    sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
-    sudo apt-get update
-    sudo apt-get upgrade
-
+    
 ## Set PowerShell Core to Run at Logon
     
-    sudo nano /home/pi/.bashrc
-
-At the end of the file enter the following 2 lines...
-
-    echo Launching PowerShell
     sudo /home/pi/powershell/pwsh
+    Add-Content -Path /home/pi/.bashrc -value "echo Launching PowerShell"
+    Add-Content -Path /home/pi/.bashrc -value "sudo /home/pi/powershell/pwsh"
 
-Press CTRL+X > Y > return
-
-## Setup PowerShell IoT Module
-    sudo apt-get install wiringpi
-    sudo /home/pi/powershell/pwsh
+## Setup PowerShell IoT Module (within PowerShell core)
+    sudo apt-get install wiringpi -y
     Install-Module -Name Microsoft.PowerShell.IoT
-    echo "export WIRINGPI_CODES=1"|sudo tee -a /etc/profile.d/WiringPiCodes.sh
-   
+    Add-Content -Path /etc/profile.d/WiringPiCodes.sh -value "export WIRINGPI_CODES=1"
+
+## Configure Different GPIO Pins for Temperature sensors (within PowerShell core)
+Change 6 and 26 to the GPIO Pins you're using
+    Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=6"
+    Add-Content -Path /boot/config.txt -value "dtoverlay=w1-gpio,gpiopin=26"
+
 ## Restart Pi into headless mode
 
 Run ifconfig to get the IP address and use PuTTY or other to ssh to the Pi and ditch the screen / keyboard
@@ -118,14 +106,17 @@ Reboot the Raspberry Pi
 
     sudo reboot
 
-Connect using the IP address / hostname either directly or over SSH. It should then launch into a PowerShell session.
+Connect using the IP address / hostname over SSH. It will launch automatically into a PowerShell Core session.
 
+## If creating a Postgres database
 To enable the Postgres database run the following commands:
 
+    sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
     Import-Module /home/pi/PiBrewery/PiBrewery.psm1
     Install-Postgres
     
 ## Launch Brewery Script    
 To run the Brewery script run:
 
+    sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery    #if not done already as part of DB install
     /home/pi/PiBrewery/Brewery.ps1
