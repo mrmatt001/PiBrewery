@@ -1,4 +1,9 @@
-$WriteToPostgres = $true
+Param(
+        [Parameter(Mandatory=$true)][STRING]$DBUser,
+        [Parameter(Mandatory=$true)][SecureString]$DBPassword
+        [Parameter]$WriteToPostgres = $true
+        )
+
 Import-Module -Name Microsoft.PowerShell.IoT
 Import-Module /home/pi/PiBrewery/PiBrewery.psm1
 $Counter = 0
