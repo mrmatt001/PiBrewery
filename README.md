@@ -68,9 +68,11 @@ Raspbian Stretch Lite (2018-11-13)
     
 ##### Set new Password for Pi (option one)
 ##### Set hostname to PiBrewery (option two | N1)
-##### Set to autologon console (option three)
+##### Set to autologon console (option three |B1 | B2)
 ##### Set wifi country to location (option four | I4)
 ##### Enable ssh (option five | P2)
+
+    sudo reboot
 
 ## Connect to Pi in headless mode (easier to copy commands from this page)
 
@@ -109,13 +111,18 @@ Change 6 and 26 to the GPIO Pins you're using
 
 Connect using the IP address / hostname over SSH. It will launch automatically into a PowerShell Core session.
 
-## If creating a Postgres database
+## OPTIONAL: If creating a Postgres database
 To enable the Postgres database run the following commands:
 
     sudo git clone https://github.com/mrmatt001/PiBrewery /home/pi/PiBrewery
     Import-Module /home/pi/PiBrewery/PiBrewery.psm1
-    Install-Postgres
+    Install-Postgres -dbuser {InsertUserName} -dbpassword {InsertPassword} -Force
     
+## OPTIONAL: If setting Pi as a Wireless Access Point
+
+    Install-AccessPoint -SSID {InsertSSID} -SSIDPassword {InsertSSIDPassword}
+    sudo reboot
+
 ## Launch Brewery Script    
 To run the Brewery script run:
 
