@@ -1,22 +1,27 @@
 function Install-Postgres
 {
+    Param(
+        [Parameter(Mandatory=$true)][STRING]$DBUser,
+        [Parameter(Mandatory=$true)][STRING]$DBPassword
+        )
+
     sudo apt-get install postgresql libpq-dev postgresql-client postgresql-client-common -y
     sudo -u postgres psql -c 'CREATE DATABASE brewery;'
-    sudo -u postgres psql brewery -c "create role dbuser with login password 'dbuserpwd';"
+    sudo -u postgres psql brewery -c "create role $DBUser with login password '$DBPassword';"
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS control(pk SERIAL PRIMARY KEY,Start INT NOT NULL,Stop INT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL);'
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brews(BrewDate TIMESTAMP NOT NULL,TimePhase1 INT NOT NULL,TempPhase1 INT NOT NULL,TimePhase2 INT NOT NULL,TempPhase2 INT NOT NULL,Malt1 VarChar(200) NULL, Malt2 VarChar(200) NULL, Malt3 VarChar(200) NULL, Hops1 Varchar(200) NULL, Hops2 VarChar(200) NULL, Hops3 VarChar(200) NULL, Notes VarChar(2000) NULL);'
     sudo -u postgres psql brewery -c 'CREATE TABLE IF NOT EXISTS brewtemps(BrewDate TIMESTAMP NOT NULL,Phase INT NOT NULL,Temperature NUMERIC (4, 1) NOT NULL,Time TIMESTAMP NOT NULL);'
     sudo -u postgres psql brewery -c 'INSERT INTO control(Start, Stop, TimePhase1, TempPhase1, TimePhase2, TempPhase2) VALUES (0,0,0,0,0,0)'
-    sudo -u postgres psql brewery -c "GRANT ALL ON control TO dbuser;"
-    sudo -u postgres psql brewery -c "GRANT ALL ON brews TO dbuser;"
-    sudo -u postgres psql brewery -c "GRANT ALL ON brewtemps TO dbuser;"
-    sudo -u postgres psql brewery -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO dbuser;"
+    sudo -u postgres psql brewery -c "GRANT ALL ON control TO $DBUser;"
+    sudo -u postgres psql brewery -c "GRANT ALL ON brews TO $DBUser;"
+    sudo -u postgres psql brewery -c "GRANT ALL ON brewtemps TO $DBUser;"
+    sudo -u postgres psql brewery -c "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO $DBUser;"
     (Get-Content /etc/postgresql/9.6/main/pg_hba.conf).replace("host    all             all             127.0.0.1/32            md5", "host    all             all             0.0.0.0/0            md5") | Set-Content /etc/postgresql/9.6/main/pg_hba.conf
-    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("#listen_addresses = localhost", "listen_addresses = '*'") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
-    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("ssl = true                             # (change requires restart)","ssl = false                             # (change requires restart)") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
+    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("#listen_addresses = 'localhost'", "listen_addresses = '*'") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
+    (Get-Content /etc/postgresql/9.6/main/postgresql.conf).replace("ssl = true","ssl = false") | Set-Content /etc/postgresql/9.6/main/postgresql.conf
     sudo service postgresql restart
     Register-PackageSource -Name "nugetv2" -ProviderName NuGet -Location "http://www.nuget.org/api/v2/"
-    Install-Package NpgSQL -force
+    Install-Package NpgSQL -force | Out-Null
 }
 
 function Remove-Postgres
